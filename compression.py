@@ -83,6 +83,9 @@ with open("skompresowany.txt", "wb") as compressed:
 
         main_tab.append(tab)
 
+    for i in main_tab:
+        print(i)
+
     key = input('Input your key: ')
 
     j = 0
@@ -92,9 +95,20 @@ with open("skompresowany.txt", "wb") as compressed:
     for x in tab_of_b:
         key_sign = ord(key[j])
 
+        print(chr(key_sign))
+        print(key_sign)
+
         sign = x
 
+        print(chr(x))
+        print(x)
+
         tab_encrypt.append(main_tab[key_sign][sign])
+
+        print(chr(main_tab[key_sign][sign]))
+        print(main_tab[key_sign][sign])
+
+        print('')
 
         j = (j + 1) % len(key)
 
