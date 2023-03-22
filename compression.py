@@ -29,18 +29,21 @@ print('R: ' + str(R))
 # dlugosc tekstu przed kompresja
 print('Dlugosc tekstu: ' + str(len(text)))
 
-# inicjalizacja pustej tablicy bajtów
-tab_of_b = bytearray()
-
 # tworzymy plik binarny ze skompresowanym tekstem
-with open("skompresowany.txt", "wb") as compressed:
+with open("skompresowany.txt", "wb") as compressed_end_encrypted:
 
-    # dodanie do tablicy ilosci typow znakow w tekscie przed jego kompresja
-    tab_of_b.append(X)
+    # ---------------
+    #    KOMPRESJA
+    # ---------------
 
-    # dodanie do tablicy elementow z listy zawierajacej wypisany kazdy rodzaj znaku wystepujacego w tekscie
-    for char_type in char_types_summary_list:
-        tab_of_b.append(ord(char_type))
+    # inicjalizacja pustej listy bajtów
+    compressed_text = bytearray()
+
+    # dodanie do listy ilosci typow znakow w tekscie przed jego kompresja
+    compressed_text.append(X)
+
+    # dodanie do listy elementow z listy zawierajacej wypisany kazdy rodzaj znaku wystepujacego w tekscie
+    compressed_text += bytes([ord(char_type) for char_type in char_types_summary_list])
 
     # inicjalizacja zmiennej przechowujacej nasz tekst w postaci ciagu 0 i 1
     binary_text = ""
@@ -49,8 +52,7 @@ with open("skompresowany.txt", "wb") as compressed:
     binary_text += to_binary(R, 3)
 
     # zamieniamy tekst do kompresji na ciag zer i jedynek
-    for char in text:
-        binary_text += to_binary(char_types_summary_list.index(char), N)
+    binary_text += ''.join([to_binary(char_types_summary_list.index(char), N) for char in text])
 
     # dodajemy nadmiarowe jedynki na koniec zakodowanego tekstu
     binary_text += '1' * R
@@ -63,54 +65,39 @@ with open("skompresowany.txt", "wb") as compressed:
 
         list_of_chr.append(sign)
 
-        tab_of_b.append(ord(sign))
+        compressed_text.append(ord(sign))
 
     print('Dlugosc tekstu po kompresji: ' + str(len(list_of_chr)))
 
-    # zapisujemy do pliku nasz skompresowany tekst
-    #compressed.write(tab_of_b)
+    # ---------------
+    #   SZYFROWANIE
+    # ---------------
 
-    main_tab = []
+    # zainicjowanie rozszerzonej tablicy ASCII o zakresie znakow od 0 do 255
+    tab_of_ascii_lists = [[col + row - 256 if col + row > 255 else col + row
+                           for col in range(256)] for row in range(256)]
 
-    for k in range(256):
-        tab = []
+    key = input('Podaj klucz: ')
 
-        for i in range(256):
-            if i + k > 255:
-                tab.append(i + k - 256)
-            else:
-                tab.append((i + k))
+    # zabezpieczenie na wypadek nie podania klucza
+    if len(key) == 0:
+        print('Bez podania klucza kompresja jest niemozliwa!')
+        exit()
 
-        main_tab.append(tab)
-
-    for i in main_tab:
-        print(i)
-
-    key = input('Input your key: ')
-
-    j = 0
+    index = 0
 
     tab_encrypt = []
 
-    for x in tab_of_b:
-        key_sign = ord(key[j])
+    # szyfrowanie skompresowanego tekstu
+    for char in compressed_text:
+        # decymalna wartość danego znaku klucza
+        key_char = ord(key[index])
 
-        print(chr(key_sign))
-        print(key_sign)
+        # zapisanie do tablicy zaszyfrowanych znaków skompresowanego tekstu
+        tab_encrypt.append(tab_of_ascii_lists[key_char][char])
 
-        sign = x
-
-        print(chr(x))
-        print(x)
-
-        tab_encrypt.append(main_tab[key_sign][sign])
-
-        print(chr(main_tab[key_sign][sign]))
-        print(main_tab[key_sign][sign])
-
-        print('')
-
-        j = (j + 1) % len(key)
+        # resetowanie indeksu znaku w kluczu, gdyby byl on krotszy niz tekst do zaszyfrowania
+        index = (index + 1) % len(key)
 
     # zapisujemy do pliku nasz skompresowany i zaszyfrowany tekst
-    compressed.write(bytes(tab_encrypt))
+    compressed_end_encrypted.write(bytes(tab_encrypt))
