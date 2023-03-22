@@ -29,14 +29,13 @@ print('R: ' + str(R))
 # dlugosc tekstu przed kompresja
 print('Dlugosc tekstu: ' + str(len(text)))
 
+# inicjalizacja pustej tablicy bajtów
+tab_of_b = bytearray()
+
 # tworzymy plik binarny ze skompresowanym tekstem
 with open("skompresowany.txt", "wb") as compressed:
 
-    # inicjalizacja pustej tablicy bajtów
-    tab_of_b = bytearray()
-
     # dodanie do tablicy ilosci typow znakow w tekscie przed jego kompresja
-
     tab_of_b.append(X)
 
     # dodanie do tablicy elementow z listy zawierajacej wypisany kazdy rodzaj znaku wystepujacego w tekscie
@@ -69,4 +68,35 @@ with open("skompresowany.txt", "wb") as compressed:
     print('Dlugosc tekstu po kompresji: ' + str(len(list_of_chr)))
 
     # zapisujemy do pliku nasz skompresowany tekst
-    compressed.write(tab_of_b)
+    #compressed.write(tab_of_b)
+
+    main_tab = []
+
+    for k in range(256):
+        tab = []
+
+        for i in range(256):
+            if i + k > 255:
+                tab.append(i + k - 256)
+            else:
+                tab.append((i + k))
+
+        main_tab.append(tab)
+
+    key = input('Input your key: ')
+
+    j = 0
+
+    tab_encrypt = []
+
+    for x in tab_of_b:
+        key_sign = ord(key[j])
+
+        sign = x
+
+        tab_encrypt.append(main_tab[key_sign][sign])
+
+        j = (j + 1) % len(key)
+
+    # zapisujemy do pliku nasz skompresowany i zaszyfrowany tekst
+    compressed.write(bytes(tab_encrypt))
