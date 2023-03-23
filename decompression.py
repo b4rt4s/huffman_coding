@@ -16,7 +16,6 @@ key = input('Podaj klucz: ')
 
 # zabezpieczenie na wypadek nie podania klucza
 if len(key) == 0:
-    print('Bez podania klucza dekompresja jest niemozliwa!')
     exit()
 
 j = 0
@@ -61,16 +60,11 @@ to_decompress = bin_text[3:(len(bin_text) - redundant_bits)]
 # obliczenie minimalnej ilosci bitow potrzebnej na zakodowanie jednego znaku w tekscie
 N = math.ceil(math.log2(uniq_signs_count))
 
-k = 0
-with open('zdekompresowany.txt', 'w') as file:
-    # dekompresja tekstu i zapisanie go na liscie str
-    decompressed = []
+# dekompresja tekstu i zapisanie go na liscie str
+decompressed = []
 
-    for i in range(0, len(to_decompress), N):
-        try:
-            decompressed.append(dictionary[int(to_decompress[i:(i + N)], 2)])
-        except IndexError:
-            k = 1
-            exit()
-    if k == 0:
-        file.write(''.join(decompressed))
+for i in range(0, len(to_decompress), N):
+    decompressed.append(dictionary[int(to_decompress[i:(i + N)], 2)])
+
+with open('zdekompresowany.txt', 'w') as file:
+    file.write(''.join(decompressed))

@@ -81,7 +81,6 @@ with open("skompresowany.txt", "wb") as compressed_end_encrypted:
 
     # zabezpieczenie na wypadek nie podania klucza
     if len(key) == 0:
-        print('Bez podania klucza kompresja jest niemozliwa!')
         exit()
 
     index = 0
