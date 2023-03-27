@@ -79,8 +79,9 @@ with open("skompresowany.txt", "wb") as compressed_end_encrypted:
 
     key = input('Podaj klucz: ')
 
-    # zabezpieczenie na wypadek nie podania klucza
+    # zabezpieczenie na wypadek niepodania klucza
     if len(key) == 0:
+        print('brak klucza')
         exit()
 
     index = 0
